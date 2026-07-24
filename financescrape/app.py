@@ -21,6 +21,7 @@ from .dashboard import build_workbook
 from .edgar_client import CompanyMatch, EdgarClient, EdgarError
 from .filings import Filing, select_filings
 from .financials import extract_figures
+from .pdf_export import PdfExportError, save_prompt_pdf
 from .prompt_builder import build_prompt
 from .sections import Section, extract_sections
 
@@ -121,6 +122,7 @@ class FinanceScrapeApp:
         ttk.Button(btns, text="Build prompt", command=self._on_build_prompt).pack(side="left")
         ttk.Button(btns, text="Copy", command=self._copy_prompt).pack(side="left", padx=4)
         ttk.Button(btns, text="Save .txt…", command=self._save_prompt).pack(side="left")
+        ttk.Button(btns, text="Save .pdf…", command=self._save_prompt_pdf).pack(side="left", padx=4)
 
         out_frame = ttk.LabelFrame(parent, text="Prompt")
         out_frame.pack(fill="both", expand=True, padx=10, pady=8)
@@ -371,6 +373,27 @@ class FinanceScrapeApp:
             with open(path, "w", encoding="utf-8") as fh:
                 fh.write(text)
             self._set_status(f"Prompt saved to {path}")
+
+    def _save_prompt_pdf(self) -> None:
+        text = self.prompt_text.get("1.0", "end").strip()
+        if not text:
+            messagebox.showinfo("Nothing to save", "Build a prompt first.")
+            return
+        path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF file", "*.pdf")],
+            initialfile="chatgpt_prompt.pdf",
+        )
+        if not path:
+            return
+        title = f"SEC Filing Analysis Prompt — {self.company_name}" if self.company_name \
+            else "SEC Filing Analysis Prompt"
+        try:
+            save_prompt_pdf(text, path, title=title)
+        except PdfExportError as exc:
+            messagebox.showerror("PDF export", str(exc))
+            return
+        self._set_status(f"Prompt saved to {path}")
 
 
 def run() -> None:

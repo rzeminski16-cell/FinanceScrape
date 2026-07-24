@@ -33,7 +33,8 @@ python -m financescrape.main
    written as an `.xlsx` with three sheets: **Summary** (matched filings),
    **Key Figures** (metrics + ratios), and **Raw Facts** (full extracted table).
 2. **Tab 2 — Analysis Prompt:** tick the 10-K / 10-Q sections you care about,
-   click *Build prompt*, then *Copy* or *Save .txt* to use it in ChatGPT.
+   click *Build prompt*, then *Copy*, *Save .txt*, or *Save .pdf* to use it in
+   ChatGPT.
 
 ## SEC contact email (required)
 
@@ -52,6 +53,7 @@ no credentials are involved.
 | `dashboard.py` | Builds the multi-sheet Excel workbook (openpyxl) |
 | `sections.py` | Parses 10-K/10-Q HTML into selectable Item/section headers + text |
 | `prompt_builder.py` | Formats selected sections into a ChatGPT analysis prompt |
+| `pdf_export.py` | Exports the generated prompt to a PDF (reportlab) |
 | `app.py` / `main.py` | Tkinter GUI and entry point |
 
 Financial figures come from EDGAR's structured **XBRL** data rather than parsed
